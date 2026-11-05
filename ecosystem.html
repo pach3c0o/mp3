@@ -1,0 +1,1031 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zorros, conejos y rocas</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..100,400..800&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root {
+  --paper: #f6f8fa;
+  --paper-line: #e2e8ef;
+  --card: #ffffff;
+  --ink: #1d2b4a;
+  --ink-soft: #5a6782;
+  --rule: #c9d3df;
+  --rabbit: #a86f12;
+  --fox: #e0400a;
+  --rock: #aab4c0;
+  --heading-font: "Archivo", "Arial Narrow", system-ui, sans-serif;
+  --body-font: "Archivo", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --number-font: "IBM Plex Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 28px 24px 48px;
+  color: var(--ink);
+  font-family: var(--body-font);
+  font-size: 14px;
+  background-color: var(--paper);
+  background-image:
+    linear-gradient(var(--paper-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--paper-line) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+.page {
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px 32px;
+  padding-bottom: 14px;
+  border-bottom: 2px solid var(--ink);
+}
+
+h1 {
+  margin: 0;
+  font-family: var(--heading-font);
+  font-stretch: 75%;
+  font-weight: 800;
+  font-size: clamp(30px, 4.5vw, 46px);
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+}
+
+.subtitle {
+  margin: 6px 0 0;
+  color: var(--ink-soft);
+}
+
+.counters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 28px;
+}
+
+.counter {
+  display: flex;
+  flex-direction: column;
+}
+
+.counter-label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--ink-soft);
+}
+
+.counter-value {
+  font-family: var(--number-font);
+  font-size: 26px;
+  font-weight: 500;
+  font-variant-numeric: tabular-nums;
+}
+
+.symbol {
+  font-size: 12px;
+  margin-right: 4px;
+}
+
+.symbol.rabbit { color: var(--rabbit); }
+.symbol.fox { color: var(--fox); }
+.symbol.rock { color: var(--rock); }
+
+.transport {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 18px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--rule);
+}
+
+.transport-buttons {
+  display: flex;
+  gap: 6px;
+}
+
+.speed {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--ink-soft);
+}
+
+.speed input {
+  width: 160px;
+  accent-color: var(--ink);
+}
+
+.speed output {
+  font-family: var(--number-font);
+  color: var(--ink);
+  min-width: 9ch;
+}
+
+button {
+  font-family: var(--body-font);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--ink);
+  background: var(--card);
+  border: 1.5px solid var(--ink);
+  border-radius: 3px;
+  padding: 7px 14px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--paper);
+}
+
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--fox);
+  outline-offset: 2px;
+}
+
+#playButton {
+  min-width: 128px;
+  background: var(--ink);
+  color: #ffffff;
+}
+
+#playButton:hover {
+  background: #2b3d63;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 24px;
+  margin-top: 20px;
+  align-items: start;
+}
+
+@media (max-width: 860px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.sheet {
+  background: var(--card);
+  border: 1px solid var(--rule);
+  padding: 16px;
+  min-width: 0;
+}
+
+.sheet + .sheet {
+  margin-top: 20px;
+}
+
+h2 {
+  margin: 0 0 12px;
+  font-family: var(--heading-font);
+  font-stretch: 75%;
+  font-weight: 700;
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.sheet-header {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 4px 16px;
+}
+
+.legend {
+  display: flex;
+  gap: 14px;
+  color: var(--ink-soft);
+  font-size: 13px;
+}
+
+#worldCanvas {
+  display: block;
+  max-width: 100%;
+}
+
+#chartCanvas {
+  display: block;
+  width: 100%;
+  height: 230px;
+}
+
+.field {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin: 9px 0;
+}
+
+.field label {
+  line-height: 1.2;
+}
+
+.field label code {
+  display: block;
+  font-family: var(--number-font);
+  font-size: 10.5px;
+  color: var(--ink-soft);
+}
+
+.leader {
+  flex: 1;
+  border-bottom: 1px dotted var(--ink-soft);
+  min-width: 12px;
+}
+
+.field input {
+  width: 72px;
+  padding: 3px 6px;
+  font-family: var(--number-font);
+  font-size: 14px;
+  color: var(--ink);
+  background: var(--paper);
+  border: none;
+  border-bottom: 1.5px solid var(--ink);
+  border-radius: 0;
+  text-align: right;
+}
+
+.note {
+  margin: 10px 0 0;
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 12px;
+}
+
+textarea {
+  width: 100%;
+  height: 170px;
+  padding: 8px;
+  font-family: var(--number-font);
+  font-size: 12px;
+  line-height: 1.5;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--rule);
+  resize: vertical;
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header>
+    <div>
+      <h1>Zorros, conejos y rocas</h1>
+      <p class="subtitle">Simulación del ecosistema con las reglas de <code>ecosystem.c</code></p>
+    </div>
+    <div class="counters">
+      <div class="counter"><span class="counter-label">Generación</span><span class="counter-value" id="generationCounter">0</span></div>
+      <div class="counter"><span class="counter-label"><span class="symbol rabbit">●</span>Conejos</span><span class="counter-value" id="rabbitCounter">0</span></div>
+      <div class="counter"><span class="counter-label"><span class="symbol fox">▲</span>Zorros</span><span class="counter-value" id="foxCounter">0</span></div>
+      <div class="counter"><span class="counter-label"><span class="symbol rock">■</span>Rocas</span><span class="counter-value" id="rockCounter">0</span></div>
+    </div>
+  </header>
+
+  <div class="transport">
+    <div class="transport-buttons">
+      <button id="playButton">▶ Reproducir</button>
+      <button id="stepButton">Paso</button>
+      <button id="restartButton">Reiniciar</button>
+    </div>
+    <label class="speed" for="speedInput">
+      Velocidad
+      <input autocomplete="off" id="speedInput" type="range" min="1" max="60" value="10">
+      <output id="speedLabel" for="speedInput">10 gen/s</output>
+    </label>
+  </div>
+
+  <div class="layout">
+
+    <div>
+      <section class="sheet">
+        <div class="sheet-header">
+          <h2>Mapa del mundo</h2>
+          <div class="legend">
+            <span><span class="symbol rabbit">●</span>Conejo</span>
+            <span><span class="symbol fox">▲</span>Zorro</span>
+            <span><span class="symbol rock">■</span>Roca</span>
+          </div>
+        </div>
+        <canvas id="worldCanvas" aria-label="Mapa del ecosistema"></canvas>
+      </section>
+
+      <section class="sheet">
+        <div class="sheet-header">
+          <h2>Población por generación</h2>
+          <div class="legend">
+            <span><span class="symbol rabbit">━</span>Conejos</span>
+            <span><span class="symbol fox">━</span>Zorros</span>
+          </div>
+        </div>
+        <canvas id="chartCanvas" aria-label="Población de conejos y zorros por generación"></canvas>
+      </section>
+    </div>
+
+    <div>
+      <section class="sheet">
+        <h2>Parámetros</h2>
+        <div class="field">
+          <label for="genProcRabbitsInput">Reproducción conejos<code>GEN_PROC_RABBITS</code></label>
+          <span class="leader"></span>
+          <input autocomplete="off" id="genProcRabbitsInput" type="number" min="1" value="2">
+        </div>
+        <div class="field">
+          <label for="genProcFoxesInput">Reproducción zorros<code>GEN_PROC_FOXES</code></label>
+          <span class="leader"></span>
+          <input autocomplete="off" id="genProcFoxesInput" type="number" min="1" value="8">
+        </div>
+        <div class="field">
+          <label for="genFoodFoxesInput">Hambre zorros<code>GEN_FOOD_FOXES</code></label>
+          <span class="leader"></span>
+          <input autocomplete="off" id="genFoodFoxesInput" type="number" min="1" value="6">
+        </div>
+        <div class="field">
+          <label for="stopAtInput">Pausar en la generación<code>N_GEN</code></label>
+          <span class="leader"></span>
+          <input autocomplete="off" id="stopAtInput" type="number" min="1" placeholder="—">
+        </div>
+        <p class="note">Se aplican en la siguiente generación, sin reiniciar.</p>
+      </section>
+
+      <section class="sheet">
+        <h2>Mundo inicial</h2>
+        <div class="field"><label for="rowsInput">Filas</label><span class="leader"></span><input autocomplete="off" id="rowsInput" type="number" min="3" max="300" value="80"></div>
+        <div class="field"><label for="columnsInput">Columnas</label><span class="leader"></span><input autocomplete="off" id="columnsInput" type="number" min="3" max="300" value="100"></div>
+        <div class="field"><label for="rabbitPercentInput">Conejos (%)</label><span class="leader"></span><input autocomplete="off" id="rabbitPercentInput" type="number" min="0" max="100" value="20"></div>
+        <div class="field"><label for="foxPercentInput">Zorros (%)</label><span class="leader"></span><input autocomplete="off" id="foxPercentInput" type="number" min="0" max="100" value="3"></div>
+        <div class="field"><label for="rockPercentInput">Rocas (%)</label><span class="leader"></span><input autocomplete="off" id="rockPercentInput" type="number" min="0" max="100" value="8"></div>
+        <div class="field"><label for="seedInput">Semilla</label><span class="leader"></span><input autocomplete="off" id="seedInput" type="number" value="7"></div>
+        <div class="buttons"><button id="createWorldButton">Crear mundo</button></div>
+      </section>
+
+      <section class="sheet">
+        <h2>Fichero de entrada</h2>
+        <textarea autocomplete="off" id="fileText" spellcheck="false" aria-label="Fichero de entrada">2 4 3 6 5 5 9
+ROCK 0 0
+RABBIT 0 2
+FOX 0 4
+FOX 1 0
+FOX 1 4
+ROCK 2 4
+RABBIT 3 0
+RABBIT 4 0
+FOX 4 4</textarea>
+        <div class="buttons">
+          <button id="loadFileButton">Cargar</button>
+          <button id="exportStateButton">Exportar estado actual</button>
+        </div>
+        <p class="note" id="fileMessage">Mismo formato que la entrada y la salida del programa en C.</p>
+      </section>
+    </div>
+
+  </div>
+</div>
+
+<script id="engine">
+const EMPTY = 0;
+const ROCK = 1;
+const RABBIT = 2;
+const FOX = 3;
+
+const NO_NEIGHBOR = -1;
+const FOX_STARVES = -2;
+
+const rowOffset = [-1, 0, 1, 0];
+const columnOffset = [0, 1, 0, -1];
+
+function makeCell(type, procreationAge, hunger) {
+  return { type: type, procreationAge: procreationAge, hunger: hunger };
+}
+
+function makeEmptyWorld(rows, columns) {
+  const cells = [];
+  for (let index = 0; index < rows * columns; index++) {
+    cells.push(makeCell(EMPTY, 0, 0));
+  }
+  return { rows: rows, columns: columns, cells: cells };
+}
+
+function isInsideWorld(world, row, column) {
+  return row >= 0 && row < world.rows && column >= 0 && column < world.columns;
+}
+
+function cellIndex(world, row, column) {
+  return row * world.columns + column;
+}
+
+function chooseNeighbor(world, row, column, generation, wantedType) {
+  const candidates = [];
+
+  for (let direction = 0; direction < 4; direction++) {
+    const neighborRow = row + rowOffset[direction];
+    const neighborColumn = column + columnOffset[direction];
+
+    if (!isInsideWorld(world, neighborRow, neighborColumn)) {
+      continue;
+    }
+    if (world.cells[cellIndex(world, neighborRow, neighborColumn)].type !== wantedType) {
+      continue;
+    }
+    candidates.push(cellIndex(world, neighborRow, neighborColumn));
+  }
+
+  if (candidates.length === 0) {
+    return NO_NEIGHBOR;
+  }
+  return candidates[(generation + row + column) % candidates.length];
+}
+
+function rabbitDestination(world, row, column, generation) {
+  const emptyNeighbor = chooseNeighbor(world, row, column, generation, EMPTY);
+
+  if (emptyNeighbor === NO_NEIGHBOR) {
+    return cellIndex(world, row, column);
+  }
+  return emptyNeighbor;
+}
+
+function foxDestination(world, row, column, generation, config) {
+  const rabbitNeighbor = chooseNeighbor(world, row, column, generation, RABBIT);
+
+  if (rabbitNeighbor !== NO_NEIGHBOR) {
+    return { destination: rabbitNeighbor, eatsRabbit: true };
+  }
+
+  const hungerAfterThisGeneration = world.cells[cellIndex(world, row, column)].hunger + 1;
+  if (hungerAfterThisGeneration >= config.genFoodFoxes) {
+    return { destination: FOX_STARVES, eatsRabbit: false };
+  }
+
+  const emptyNeighbor = chooseNeighbor(world, row, column, generation, EMPTY);
+  if (emptyNeighbor === NO_NEIGHBOR) {
+    return { destination: cellIndex(world, row, column), eatsRabbit: false };
+  }
+  return { destination: emptyNeighbor, eatsRabbit: false };
+}
+
+function nextCellAfterRabbitsMove(before, row, column, generation, config) {
+  const index = cellIndex(before, row, column);
+  const current = before.cells[index];
+
+  if (current.type === ROCK || current.type === FOX) {
+    return current;
+  }
+
+  if (current.type === RABBIT) {
+    const newAge = current.procreationAge + 1;
+    const destination = rabbitDestination(before, row, column, generation);
+
+    if (destination === index) {
+      return makeCell(RABBIT, newAge, 0);
+    }
+    if (newAge > config.genProcRabbits) {
+      return makeCell(RABBIT, 0, 0);
+    }
+    return makeCell(EMPTY, 0, 0);
+  }
+
+  let result = makeCell(EMPTY, 0, 0);
+
+  for (let direction = 0; direction < 4; direction++) {
+    const neighborRow = row + rowOffset[direction];
+    const neighborColumn = column + columnOffset[direction];
+
+    if (!isInsideWorld(before, neighborRow, neighborColumn)) {
+      continue;
+    }
+    const neighbor = before.cells[cellIndex(before, neighborRow, neighborColumn)];
+    if (neighbor.type !== RABBIT) {
+      continue;
+    }
+    if (rabbitDestination(before, neighborRow, neighborColumn, generation) !== index) {
+      continue;
+    }
+
+    let arrivingAge = neighbor.procreationAge + 1;
+    if (arrivingAge > config.genProcRabbits) {
+      arrivingAge = 0;
+    }
+
+    const noRabbitYet = result.type === EMPTY;
+    const arrivingIsOlder = arrivingAge > result.procreationAge;
+    if (noRabbitYet || arrivingIsOlder) {
+      result = makeCell(RABBIT, arrivingAge, 0);
+    }
+  }
+  return result;
+}
+
+function nextCellAfterFoxesMove(before, row, column, generation, config) {
+  const index = cellIndex(before, row, column);
+  const current = before.cells[index];
+
+  if (current.type === ROCK) {
+    return current;
+  }
+
+  if (current.type === FOX) {
+    const newAge = current.procreationAge + 1;
+    const move = foxDestination(before, row, column, generation, config);
+
+    if (move.destination === FOX_STARVES) {
+      return makeCell(EMPTY, 0, 0);
+    }
+    if (move.destination === index) {
+      return makeCell(FOX, newAge, current.hunger + 1);
+    }
+    if (newAge > config.genProcFoxes) {
+      return makeCell(FOX, 0, 0);
+    }
+    return makeCell(EMPTY, 0, 0);
+  }
+
+  let result = current;
+  let foxArrived = false;
+
+  for (let direction = 0; direction < 4; direction++) {
+    const neighborRow = row + rowOffset[direction];
+    const neighborColumn = column + columnOffset[direction];
+
+    if (!isInsideWorld(before, neighborRow, neighborColumn)) {
+      continue;
+    }
+    const neighbor = before.cells[cellIndex(before, neighborRow, neighborColumn)];
+    if (neighbor.type !== FOX) {
+      continue;
+    }
+    const move = foxDestination(before, neighborRow, neighborColumn, generation, config);
+    if (move.destination !== index) {
+      continue;
+    }
+
+    let arrivingAge = neighbor.procreationAge + 1;
+    if (arrivingAge > config.genProcFoxes) {
+      arrivingAge = 0;
+    }
+    const arrivingHunger = move.eatsRabbit ? 0 : neighbor.hunger + 1;
+
+    const arrivingIsOlder = arrivingAge > result.procreationAge;
+    const sameAgeButLessHungry = arrivingAge === result.procreationAge && arrivingHunger < result.hunger;
+    if (!foxArrived || arrivingIsOlder || sameAgeButLessHungry) {
+      result = makeCell(FOX, arrivingAge, arrivingHunger);
+      foxArrived = true;
+    }
+  }
+  return result;
+}
+
+function moveRabbits(before, generation, config) {
+  const after = makeEmptyWorld(before.rows, before.columns);
+  for (let row = 0; row < before.rows; row++) {
+    for (let column = 0; column < before.columns; column++) {
+      after.cells[cellIndex(before, row, column)] = nextCellAfterRabbitsMove(before, row, column, generation, config);
+    }
+  }
+  return after;
+}
+
+function moveFoxes(before, generation, config) {
+  const after = makeEmptyWorld(before.rows, before.columns);
+  for (let row = 0; row < before.rows; row++) {
+    for (let column = 0; column < before.columns; column++) {
+      after.cells[cellIndex(before, row, column)] = nextCellAfterFoxesMove(before, row, column, generation, config);
+    }
+  }
+  return after;
+}
+
+function simulateOneGeneration(world, generation, config) {
+  const afterRabbits = moveRabbits(world, generation, config);
+  return moveFoxes(afterRabbits, generation, config);
+}
+
+function countByType(world) {
+  const counts = { rocks: 0, rabbits: 0, foxes: 0 };
+  for (const cell of world.cells) {
+    if (cell.type === ROCK) counts.rocks++;
+    if (cell.type === RABBIT) counts.rabbits++;
+    if (cell.type === FOX) counts.foxes++;
+  }
+  return counts;
+}
+
+const typeNames = ["EMPTY", "ROCK", "RABBIT", "FOX"];
+
+function parseInputFile(text) {
+  const lines = text.trim().split("\n");
+  const header = lines[0].trim().split(/\s+/).map(Number);
+
+  if (header.length !== 7 || header.some(value => !Number.isInteger(value) || value < 0)) {
+    throw new Error("La primera línea debe tener 7 números enteros.");
+  }
+
+  const config = { genProcRabbits: header[0], genProcFoxes: header[1], genFoodFoxes: header[2] };
+  const numberOfGenerations = header[3];
+  const world = makeEmptyWorld(header[4], header[5]);
+
+  for (let lineNumber = 1; lineNumber < lines.length; lineNumber++) {
+    const parts = lines[lineNumber].trim().split(/\s+/);
+    const type = typeNames.indexOf(parts[0]);
+    const row = Number(parts[1]);
+    const column = Number(parts[2]);
+
+    if (type <= EMPTY) {
+      throw new Error("Objeto desconocido en la línea " + (lineNumber + 1) + ".");
+    }
+    if (!Number.isInteger(row) || !Number.isInteger(column) || !isInsideWorld(world, row, column)) {
+      throw new Error("Posición fuera del mundo en la línea " + (lineNumber + 1) + ".");
+    }
+    world.cells[cellIndex(world, row, column)] = makeCell(type, 0, 0);
+  }
+
+  return { config: config, numberOfGenerations: numberOfGenerations, world: world };
+}
+
+function formatOutput(world, config) {
+  const lines = [];
+  for (let index = 0; index < world.cells.length; index++) {
+    const cell = world.cells[index];
+    if (cell.type !== EMPTY) {
+      const row = Math.floor(index / world.columns);
+      const column = index % world.columns;
+      lines.push(typeNames[cell.type] + " " + row + " " + column);
+    }
+  }
+  const header = [config.genProcRabbits, config.genProcFoxes, config.genFoodFoxes, 0, world.rows, world.columns, lines.length];
+  return header.join(" ") + "\n" + lines.join("\n");
+}
+</script>
+
+<script>
+let world = null;
+let initialWorld = null;
+let generation = 0;
+let history = [];
+let playing = false;
+let timer = null;
+
+function readNumber(id, minimum, maximum) {
+  let value = Math.round(Number(document.getElementById(id).value));
+  if (Number.isNaN(value)) value = minimum;
+  return Math.min(maximum, Math.max(minimum, value));
+}
+
+function readConfig() {
+  return {
+    genProcRabbits: readNumber("genProcRabbitsInput", 1, 1000),
+    genProcFoxes: readNumber("genProcFoxesInput", 1, 1000),
+    genFoodFoxes: readNumber("genFoodFoxesInput", 1, 1000),
+  };
+}
+
+function seededRandom(seed) {
+  let state = seed % 2147483647;
+  if (state <= 0) state += 2147483646;
+  return function () {
+    state = (state * 16807) % 2147483647;
+    return (state - 1) / 2147483646;
+  };
+}
+
+function createRandomWorld() {
+  const rows = readNumber("rowsInput", 3, 300);
+  const columns = readNumber("columnsInput", 3, 300);
+  const rockChance = readNumber("rockPercentInput", 0, 100) / 100;
+  const rabbitChance = readNumber("rabbitPercentInput", 0, 100) / 100;
+  const foxChance = readNumber("foxPercentInput", 0, 100) / 100;
+  const random = seededRandom(readNumber("seedInput", 1, 1000000));
+
+  const newWorld = makeEmptyWorld(rows, columns);
+  for (const cell of newWorld.cells) {
+    const roll = random();
+    if (roll < rockChance) {
+      cell.type = ROCK;
+    } else if (roll < rockChance + rabbitChance) {
+      cell.type = RABBIT;
+    } else if (roll < rockChance + rabbitChance + foxChance) {
+      cell.type = FOX;
+    }
+  }
+  return newWorld;
+}
+
+function startWorld(newWorld) {
+  pause();
+  initialWorld = newWorld;
+  world = newWorld;
+  generation = 0;
+  history = [countByType(world)];
+  draw();
+}
+
+function nextGeneration() {
+  world = simulateOneGeneration(world, generation, readConfig());
+  generation++;
+  history.push(countByType(world));
+
+  const stopAt = document.getElementById("stopAtInput").value;
+  if (stopAt !== "" && generation >= Number(stopAt)) {
+    pause();
+  }
+}
+
+function play() {
+  playing = true;
+  document.getElementById("playButton").textContent = "❚❚ Pausar";
+  const generationsPerSecond = Number(document.getElementById("speedInput").value);
+  timer = setInterval(function () {
+    nextGeneration();
+    draw();
+  }, 1000 / generationsPerSecond);
+}
+
+function pause() {
+  playing = false;
+  document.getElementById("playButton").textContent = "▶ Reproducir";
+  clearInterval(timer);
+}
+
+function draw() {
+  drawWorld();
+  drawChart();
+  const counts = history[history.length - 1];
+  document.getElementById("generationCounter").textContent = generation;
+  document.getElementById("rabbitCounter").textContent = counts.rabbits;
+  document.getElementById("foxCounter").textContent = counts.foxes;
+  document.getElementById("rockCounter").textContent = counts.rocks;
+}
+
+function cssColor(name) {
+  return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+}
+
+function prepareCanvas(canvas, width, height) {
+  const scale = window.devicePixelRatio || 1;
+  canvas.width = Math.round(width * scale);
+  canvas.height = Math.round(height * scale);
+  canvas.style.width = width + "px";
+  canvas.style.height = height + "px";
+  const context = canvas.getContext("2d");
+  context.scale(scale, scale);
+  return context;
+}
+
+function drawWorld() {
+  const canvas = document.getElementById("worldCanvas");
+  const marginLeft = 30;
+  const marginTop = 18;
+  const sheetPadding = 32;
+  const availableWidth = canvas.parentElement.clientWidth - sheetPadding - marginLeft;
+  const availableHeight = window.innerHeight * 0.75;
+  const cellSize = Math.max(2, Math.floor(Math.min(availableWidth / world.columns, availableHeight / world.rows)));
+  const mapWidth = world.columns * cellSize;
+  const mapHeight = world.rows * cellSize;
+  const context = prepareCanvas(canvas, marginLeft + mapWidth, marginTop + mapHeight);
+
+  context.fillStyle = cssColor("--paper");
+  context.fillRect(marginLeft, marginTop, mapWidth, mapHeight);
+
+  const tickStep = cellSize >= 14 ? 5 : 10;
+  context.lineWidth = 1;
+  for (let column = 0; column <= world.columns; column++) {
+    const isMajor = column % tickStep === 0;
+    if (!isMajor && cellSize < 8) continue;
+    context.strokeStyle = isMajor ? cssColor("--rule") : cssColor("--paper-line");
+    context.beginPath();
+    context.moveTo(marginLeft + column * cellSize + 0.5, marginTop);
+    context.lineTo(marginLeft + column * cellSize + 0.5, marginTop + mapHeight);
+    context.stroke();
+  }
+  for (let row = 0; row <= world.rows; row++) {
+    const isMajor = row % tickStep === 0;
+    if (!isMajor && cellSize < 8) continue;
+    context.strokeStyle = isMajor ? cssColor("--rule") : cssColor("--paper-line");
+    context.beginPath();
+    context.moveTo(marginLeft, marginTop + row * cellSize + 0.5);
+    context.lineTo(marginLeft + mapWidth, marginTop + row * cellSize + 0.5);
+    context.stroke();
+  }
+
+  context.fillStyle = cssColor("--ink-soft");
+  context.font = "10px " + cssColor("--number-font");
+  context.textAlign = "center";
+  context.textBaseline = "bottom";
+  for (let column = 0; column < world.columns; column += tickStep) {
+    context.fillText(String(column), marginLeft + column * cellSize + cellSize / 2, marginTop - 4);
+  }
+  context.textAlign = "right";
+  context.textBaseline = "middle";
+  for (let row = 0; row < world.rows; row += tickStep) {
+    context.fillText(String(row), marginLeft - 6, marginTop + row * cellSize + cellSize / 2);
+  }
+
+  const colors = { [ROCK]: cssColor("--rock"), [RABBIT]: cssColor("--rabbit"), [FOX]: cssColor("--fox") };
+  for (let row = 0; row < world.rows; row++) {
+    for (let column = 0; column < world.columns; column++) {
+      const cell = world.cells[cellIndex(world, row, column)];
+      if (cell.type === EMPTY) continue;
+      const x = marginLeft + column * cellSize;
+      const y = marginTop + row * cellSize;
+      context.fillStyle = colors[cell.type];
+      drawShape(context, cell.type, x, y, cellSize);
+    }
+  }
+}
+
+function drawShape(context, type, x, y, size) {
+  if (size < 10) {
+    context.fillRect(x, y, size, size);
+    return;
+  }
+
+  const center = size / 2;
+  const inset = size * 0.14;
+
+  if (type === ROCK) {
+    context.fillRect(x + inset, y + inset, size - 2 * inset, size - 2 * inset);
+  } else if (type === RABBIT) {
+    context.beginPath();
+    context.arc(x + center, y + center, size / 2 - inset, 0, 2 * Math.PI);
+    context.fill();
+  } else if (type === FOX) {
+    context.beginPath();
+    context.moveTo(x + center, y + inset);
+    context.lineTo(x + size - inset, y + size - inset);
+    context.lineTo(x + inset, y + size - inset);
+    context.closePath();
+    context.fill();
+  }
+}
+
+function niceStep(roughStep) {
+  const magnitude = Math.pow(10, Math.floor(Math.log10(roughStep)));
+  for (const multiplier of [1, 2, 5, 10]) {
+    if (multiplier * magnitude >= roughStep) {
+      return multiplier * magnitude;
+    }
+  }
+  return 10 * magnitude;
+}
+
+function drawChart() {
+  const canvas = document.getElementById("chartCanvas");
+  const width = canvas.parentElement.clientWidth - 32;
+  const height = 230;
+  const context = prepareCanvas(canvas, width, height);
+
+  const left = 52;
+  const right = 12;
+  const top = 10;
+  const bottom = 26;
+  const plotWidth = width - left - right;
+  const plotHeight = height - top - bottom;
+
+  let largestPopulation = 1;
+  for (const counts of history) {
+    largestPopulation = Math.max(largestPopulation, counts.rabbits, counts.foxes);
+  }
+  const populationStep = Math.max(1, niceStep(largestPopulation / 4));
+  const maximum = Math.ceil(largestPopulation / populationStep) * populationStep;
+  const lastGeneration = Math.max(1, history.length - 1);
+  const generationStep = Math.max(1, niceStep(lastGeneration / 6));
+
+  function x(generationNumber) {
+    return left + (generationNumber / lastGeneration) * plotWidth;
+  }
+  function y(population) {
+    return top + plotHeight - (population / maximum) * plotHeight;
+  }
+
+  context.font = "11px " + cssColor("--number-font");
+  context.fillStyle = cssColor("--ink-soft");
+  context.lineWidth = 1;
+
+  context.textAlign = "right";
+  context.textBaseline = "middle";
+  for (let population = 0; population <= maximum; population += populationStep) {
+    context.strokeStyle = population === 0 ? cssColor("--ink") : cssColor("--paper-line");
+    context.beginPath();
+    context.moveTo(left, Math.round(y(population)) + 0.5);
+    context.lineTo(left + plotWidth, Math.round(y(population)) + 0.5);
+    context.stroke();
+    context.fillText(String(population), left - 8, y(population));
+  }
+
+  context.textAlign = "center";
+  context.textBaseline = "top";
+  for (let generationNumber = 0; generationNumber <= lastGeneration; generationNumber += generationStep) {
+    context.fillText(String(generationNumber), x(generationNumber), top + plotHeight + 8);
+  }
+
+  drawLine(context, "rabbits", cssColor("--rabbit"), x, y);
+  drawLine(context, "foxes", cssColor("--fox"), x, y);
+}
+
+function drawLine(context, key, color, x, y) {
+  context.strokeStyle = color;
+  context.lineWidth = 2;
+  context.lineJoin = "round";
+  context.beginPath();
+  for (let index = 0; index < history.length; index++) {
+    if (index === 0) {
+      context.moveTo(x(index), y(history[index][key]));
+    } else {
+      context.lineTo(x(index), y(history[index][key]));
+    }
+  }
+  context.stroke();
+  context.lineWidth = 1;
+}
+
+document.getElementById("playButton").addEventListener("click", function () {
+  if (playing) {
+    pause();
+  } else {
+    play();
+  }
+});
+
+document.getElementById("stepButton").addEventListener("click", function () {
+  pause();
+  nextGeneration();
+  draw();
+});
+
+document.getElementById("restartButton").addEventListener("click", function () {
+  startWorld(initialWorld);
+});
+
+document.getElementById("speedInput").addEventListener("input", function () {
+  document.getElementById("speedLabel").textContent = this.value + " gen/s";
+  if (playing) {
+    pause();
+    play();
+  }
+});
+
+document.getElementById("createWorldButton").addEventListener("click", function () {
+  document.getElementById("stopAtInput").value = "";
+  startWorld(createRandomWorld());
+});
+
+document.getElementById("loadFileButton").addEventListener("click", function () {
+  const message = document.getElementById("fileMessage");
+  try {
+    const input = parseInputFile(document.getElementById("fileText").value);
+    document.getElementById("genProcRabbitsInput").value = input.config.genProcRabbits;
+    document.getElementById("genProcFoxesInput").value = input.config.genProcFoxes;
+    document.getElementById("genFoodFoxesInput").value = input.config.genFoodFoxes;
+    if (input.numberOfGenerations > 0) {
+      document.getElementById("stopAtInput").value = input.numberOfGenerations;
+      message.textContent = "Cargado. Se pausará en la generación " + input.numberOfGenerations + ".";
+    } else {
+      document.getElementById("stopAtInput").value = "";
+      message.textContent = "Cargado.";
+    }
+    startWorld(input.world);
+  } catch (error) {
+    message.textContent = error.message;
+  }
+});
+
+document.getElementById("exportStateButton").addEventListener("click", function () {
+  document.getElementById("fileText").value = formatOutput(world, readConfig());
+  document.getElementById("fileMessage").textContent = "Estado de la generación " + generation + ".";
+});
+
+window.addEventListener("resize", draw);
+document.fonts.ready.then(draw);
+
+startWorld(createRandomWorld());
+</script>
+</body>
+</html>

@@ -1,0 +1,7 @@
+/ecosystem
+/ecosystem-omp
+*.in
+!ex1.in
+*.out
+!ex1.out
+.DS_Store
