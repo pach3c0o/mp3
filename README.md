@@ -153,3 +153,5 @@ Los valores por defecto (2 / 8 / 6, mundo de 80 × 100 con 20 % de conejos, 3 % 
 
 - `<script id="engine">` contiene la simulación. Es una traducción directa de `ecosystem.c`: las funciones tienen los mismos nombres (`chooseNeighbor`, `rabbitDestination`, `foxDestination`, `nextCellAfterRabbitsMove`, `nextCellAfterFoxesMove`...) y siguen el mismo método *pull*. También incluye `parseInputFile` y `formatOutput` para leer y escribir el formato del enunciado.
 - El segundo `<script>` contiene la interfaz: crear el mundo aleatorio, el temporizador de reproducción, el dibujo del mapa y de la gráfica, y los botones.
+
+# video: https://drive.google.com/drive/folders/1oOSPjMpXzV7KTHt8ligkIxZ4peRDLCxN?usp=drive_link
